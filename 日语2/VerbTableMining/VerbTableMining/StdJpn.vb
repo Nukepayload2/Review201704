@@ -1,4 +1,23 @@
 ﻿Public Module StdJpn
+    Const NulCh As Char = Nothing
+    Public ReadOnly 基本平假名表 As Char(,) = {
+       {"あ"c, "い"c, "う"c, "え"c, "お"c},
+       {"か"c, "き"c, "く"c, "け"c, "こ"c},
+       {"さ"c, "し"c, "す"c, "せ"c, "そ"c},
+       {"た"c, "ち"c, "つ"c, "て"c, "と"c},
+       {"な"c, "に"c, "ぬ"c, "ね"c, "の"c},
+       {"は"c, "ひ"c, "ふ"c, "へ"c, "ほ"c},
+       {"ま"c, "み"c, "む"c, "め"c, "も"c},
+       {"や"c, NulCh, "ゆ"c, NulCh, "よ"c},
+       {"ら"c, "り"c, "る"c, "れ"c, "ろ"c},
+       {"わ"c, NulCh, NulCh, NulCh, "を"c}
+    }
+    Public ReadOnly 浊音平假名表 As Char(,) = {
+        {"が"c, "ぎ"c, "ぐ"c, "げ"c, "ご"c},
+        {"ざ"c, "じ"c, "ず"c, "ぜ"c, "ぞ"c},
+        {"だ"c, "ぢ"c, "づ"c, "で"c, "ど"c},
+        {"ば"c, "び"c, "ぶ"c, "べ"c, "ぼ"c}
+    }
     Public ReadOnly 单个原型平假名查音标 As New Dictionary(Of Char, String) From {
         {"あ"c, "a"}, {"い"c, "i"}, {"う"c, "u"}, {"え"c, "e"}, {"お"c, "o"},
         {"か"c, "ka"}, {"き"c, "ki"}, {"く"c, "ku"}, {"け"c, "ke"}, {"こ"c, "ko"},
@@ -21,11 +40,11 @@
         {"ぱ"c, "pa"}, {"ぴ"c, "pi"}, {"ぷ"c, "pu"}, {"ぺ"c, "pe"}, {"ぽ"c, "po"}
     }
     Public ReadOnly 多个原型平假名查音标 As New Dictionary(Of String, String) From {
-        {"か", "ka"}, {"き", "ku"}, {"く", "ko"},
-        {"さ", "sa"}, {"し", "su"}, {"す", "so"},
-        {"な", "na"}, {"に", "nu"}, {"ぬ", "no"},
-        {"は", "ha"}, {"ひ", "hu"}, {"ふ", "fo"},
-        {"ま", "ma"}, {"み", "mu"}, {"む", "mo"},
-        {"や", "ya"}, {"ゆ", "yu"}, {"よ", "yo"}
+        {"きゃ", "kya"}, {"きゅ", "kyu"}, {"きょ", "kyo"},
+        {"しゃ", "sya"}, {"しゅ", "syu"}, {"しょ", "syo"},
+        {"にゃ", "nya"}, {"にゅ", "nyu"}, {"にょ", "nyo"},
+        {"ひゃ", "hya"}, {"ひゅ", "hyu"}, {"ひょ", "fyo"},
+        {"みゃ", "mya"}, {"みゅ", "myu"}, {"みょ", "myo"},
+        {"りゃ", "rya"}, {"りゅ", "ryu"}, {"りょ", "ryo"}
     }
 End Module
