@@ -4,9 +4,9 @@ Main wscript.arguments
 
 Sub Main(args)
     Set fso = CreateObject("Scripting.FileSystemObject")
-    Set strm = fso.OpenTextFile(args(0), ForReading)
-    text = strm.ReadAll
-    strm.Close
+    Set strmRead = fso.OpenTextFile(args(0), ForReading)
+    text = strmRead.ReadAll
+    strmRead.Close
     Set reg = New RegExp
     reg.Global = True
     reg.Pattern = "^"
@@ -19,5 +19,6 @@ Sub Main(args)
     writeStrm.WriteLine "|¼ÙÃû|ÈÕÎÄºº×Ö|·­Òë|"
     writeStrm.WriteLine "|-|-|-|"
     writeStrm.Write text
+    writeStrm.WriteLine "||"
     writeStrm.Close
 End Sub
