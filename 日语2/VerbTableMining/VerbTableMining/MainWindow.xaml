@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <ProgressBar x:Name="prgProcess"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="TxtOut" AcceptsReturn="True" IsReadOnly="True"></TextBox>
+        <ProgressBar x:Name="prgProcess" Grid.Row="1"/>
     </Grid>
 </Window>

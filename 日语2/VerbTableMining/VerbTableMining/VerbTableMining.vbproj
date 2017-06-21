@@ -68,11 +68,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CustomVerbGrouper.vb" />
+    <Compile Include="CustomVerbRefinery.vb" />
+    <Compile Include="RefinedVerb.vb" />
+    <Compile Include="RefinedVerbs.vb" />
     <Compile Include="StdJpn.vb" />
-    <Compile Include="标准日本语初级上册动词表ViewModel.vb" />
-    <Compile Include="标准日本语初级上册动词表_一类.vb" />
-    <Compile Include="标准日本语初级上册动词表_三类.vb" />
-    <Compile Include="标准日本语初级上册动词表_二类.vb" />
+    <Compile Include="VerbKinds.vb" />
+    <Compile Include="Verb.vb" />
+    <Compile Include="StdJpnVerbs1aViewModel.vb" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

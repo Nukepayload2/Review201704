@@ -12,6 +12,9 @@
        {"ら"c, "り"c, "る"c, "れ"c, "ろ"c},
        {"わ"c, NulCh, NulCh, NulCh, "を"c}
     }
+    Public ReadOnly 行 As String = " kstnhmyrw"
+    Public ReadOnly 段 As String = "aiueo"
+
     Public ReadOnly 浊音平假名表 As Char(,) = {
         {"が"c, "ぎ"c, "ぐ"c, "げ"c, "ご"c},
         {"ざ"c, "じ"c, "ず"c, "ぜ"c, "ぞ"c},
@@ -47,4 +50,23 @@
         {"みゃ", "mya"}, {"みゅ", "myu"}, {"みょ", "myo"},
         {"りゃ", "rya"}, {"りゅ", "ryu"}, {"りょ", "ryo"}
     }
+    Public ReadOnly 单个平假名查音标 As New Dictionary(Of Char, String)
+
+    Sub New()
+        For Each item In 单个原型平假名查音标.Concat(单个半浊音平假名查音标).Concat(单个浊音平假名查音标)
+            单个平假名查音标.Add(item.Key, item.Value)
+        Next
+    End Sub
+    ''' <summary>
+    ''' 将假名转换为罗马音标。失败则返回空。
+    ''' </summary>
+    Public Function Try假名到罗马音标(假名 As Char) As String
+        Dim str = String.Empty
+        单个平假名查音标.TryGetValue(假名, str)
+        Return str
+    End Function
+
+    Public Function Is假名(ch As Char) As Boolean
+        Return 单个平假名查音标.ContainsKey(ch)
+    End Function
 End Module
