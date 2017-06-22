@@ -1,4 +1,6 @@
-﻿Public Module StdJpn
+﻿Imports System.Runtime.CompilerServices
+
+Public Module StdJpn
     Const NulCh As Char = Nothing
     Public ReadOnly 基本平假名表 As Char(,) = {
        {"あ"c, "い"c, "う"c, "え"c, "お"c},
@@ -67,7 +69,19 @@
         Return str
     End Function
 
-    Public Function Is假名(ch As Char) As Boolean
+    Public Function 是大写假名(ch As Char) As Boolean
         Return 单个平假名查音标.ContainsKey(ch)
+    End Function
+
+    <Extension>
+    Public Function 是平假名(ch As Char) As Boolean
+        Dim chCode = AscW(ch)
+        Return chCode >= 12352 AndAlso chCode <= 12447
+    End Function
+
+    <Extension>
+    Public Function 是片假名(ch As Char) As Boolean
+        Dim chCode = AscW(ch)
+        Return chCode >= 12448 AndAlso chCode <= 12543
     End Function
 End Module

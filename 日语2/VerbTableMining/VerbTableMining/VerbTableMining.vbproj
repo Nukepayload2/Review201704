@@ -68,7 +68,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CustomVerbGrouper.vb" />
+    <Compile Include="CustomWordGrouper.vb" />
     <Compile Include="CustomVerbRefinery.vb" />
     <Compile Include="LineExtension.vb" />
     <Compile Include="RefinedFiveKindVerbs.vb" />
@@ -79,6 +79,9 @@
     <Compile Include="VerbKinds.vb" />
     <Compile Include="Verb.vb" />
     <Compile Include="StdJpnVerbs1aViewModel.vb" />
+    <Compile Include="Vocabulary.vb" />
+    <Compile Include="VocabularyItem.vb" />
+    <Compile Include="词汇分类.vb" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
