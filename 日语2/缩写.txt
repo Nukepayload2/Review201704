@@ -10,7 +10,9 @@ v1e 下一段动词
 vs さ变动词
 vk か变动词
 int 叹词
-cmp 未分类的合成词
-pri 专有名词
+cmp 课本未分类的词或合成词
+pri 专有词（private）
 conj 连词
-num 量词
+qua 量词（quantifier）
+pron 代词
+que 疑问词（question word）
