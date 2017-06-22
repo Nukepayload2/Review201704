@@ -70,9 +70,12 @@
     </ApplicationDefinition>
     <Compile Include="CustomVerbGrouper.vb" />
     <Compile Include="CustomVerbRefinery.vb" />
+    <Compile Include="LineExtension.vb" />
+    <Compile Include="RefinedFiveKindVerbs.vb" />
     <Compile Include="RefinedVerb.vb" />
     <Compile Include="RefinedVerbs.vb" />
     <Compile Include="StdJpn.vb" />
+    <Compile Include="VerbGroupConverter.vb" />
     <Compile Include="VerbKinds.vb" />
     <Compile Include="Verb.vb" />
     <Compile Include="StdJpnVerbs1aViewModel.vb" />
@@ -138,6 +141,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="refined.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="refined5kinds.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -12,6 +12,7 @@
        {"ら"c, "り"c, "る"c, "れ"c, "ろ"c},
        {"わ"c, NulCh, NulCh, NulCh, "を"c}
     }
+    '05272216
     Public ReadOnly 行 As String = " kstnhmyrw"
     Public ReadOnly 段 As String = "aiueo"
 
@@ -60,7 +61,7 @@
     ''' <summary>
     ''' 将假名转换为罗马音标。失败则返回空。
     ''' </summary>
-    Public Function Try假名到罗马音标(假名 As Char) As String
+    Public Function 假名到罗马音标(假名 As Char) As String
         Dim str = String.Empty
         单个平假名查音标.TryGetValue(假名, str)
         Return str

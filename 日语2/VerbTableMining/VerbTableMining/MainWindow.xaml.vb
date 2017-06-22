@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports Newtonsoft.Json
+Imports VerbTableMining
 
 Class MainWindow
     Private Async Sub MainWindow_LoadedAsync(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
@@ -12,8 +13,10 @@ Class MainWindow
                 'JsonConvert.PopulateObject(File.ReadAllText("data.json")， vm)
                 'File.WriteAllText("refined.json", JsonConvert.SerializeObject(vm.Refine))
                 Dim refined As New RefinedVerbs
-                JsonConvert.PopulateObject(File.ReadAllText("data.json"), refined)
-
+                JsonConvert.PopulateObject(File.ReadAllText("refined.json"), refined)
+                Dim refined5Kinds As New RefinedFiveKindVerbs
+                VerbGroupConverter.转换为五类动词表(refined, refined5Kinds)
+                File.WriteAllText("refined5kinds.json", JsonConvert.SerializeObject(refined5Kinds))
             End Sub)
         prgProcess.IsIndeterminate = False
     End Sub

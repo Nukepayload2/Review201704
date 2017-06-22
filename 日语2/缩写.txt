@@ -11,3 +11,6 @@ vs さ变动词
 vk か变动词
 int 叹词
 cmp 未分类的合成词
+pri 专有名词
+conj 连词
+num 量词
