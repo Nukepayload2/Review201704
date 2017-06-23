@@ -6,25 +6,99 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <local:RememberedConverter x:Key="RememberedConverter"/>
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot x:Name="Verbs">
-            <Pivot.HeaderTemplate>
-                <DataTemplate x:DataType="local:VocabularyCourse">
-                    <TextBlock Text="{x:Bind md}"/>
-                </DataTemplate>
-            </Pivot.HeaderTemplate>
-            <Pivot.ItemTemplate>
-                <DataTemplate x:DataType="local:VocabularyCourse">
-                    <GridView ItemsSource="{x:Bind Content}">
-                        <GridView.ItemTemplate>
-                            <DataTemplate x:DataType="local:VocabularyItem">
-                                
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                    </GridView>
-                </DataTemplate>
-            </Pivot.ItemTemplate>
-        </Pivot>
+        <SplitView x:Name="SplTrain" PanePlacement="Right">
+            <SplitView.Pane>
+                <Grid x:Name="GrdSelectedItem">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="BtnBack" Style="{StaticResource NavigationBackButtonNormalStyle}"/>
+                        <TextBlock Grid.Column="1" Margin="4" FontSize="24">練習します</TextBlock>
+                        <Button Tag="{Binding Mode=OneWay}" Grid.Column="2" Margin="4" Click="BtnPlay_Click">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE102;" />
+                        </Button>
+                        <Button x:Name="BtnClearInk" Grid.Column="3" Margin="4">
+                            <SymbolIcon Symbol="Delete"/>
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock>假名</TextBlock>
+                            <TextBlock FontSize="32" Text="{Binding Jm,Mode=OneWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1">
+                            <TextBlock>汉字</TextBlock>
+                            <TextBlock FontSize="28" Text="{Binding Hanz,Mode=OneWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock>翻译</TextBlock>
+                            <TextBlock FontSize="24" Text="{Binding Translation,Mode=OneWay}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1">
+                            <TextBlock>词性</TextBlock>
+                            <TextBlock FontSize="24" Text="{Binding Kind,Mode=OneWay}"/>
+                        </StackPanel>
+                    </Grid>
+                    <InkCanvas x:Name="InkTraining" Grid.Row="2"/>
+                </Grid>
+            </SplitView.Pane>
+            <Pivot x:Name="Verbs" ItemsSource="{x:Bind DataSource,Mode=OneWay}">
+                <Pivot.HeaderTemplate>
+                    <DataTemplate x:DataType="local:VocabularyGroup">
+                        <TextBlock Text="{x:Bind Kind}"/>
+                    </DataTemplate>
+                </Pivot.HeaderTemplate>
+                <Pivot.ItemTemplate>
+                    <DataTemplate x:DataType="local:VocabularyGroup">
+                        <GridView ItemsSource="{x:Bind Group}" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+                            <GridView.ItemTemplate>
+                                <DataTemplate x:DataType="local:VocabularyGroupItem">
+                                    <StackPanel Background="{x:Bind Trained,Mode=OneWay,Converter={StaticResource RememberedConverter}}" RequestedTheme="Dark">
+                                        <TextBlock FontSize="24" Text="{x:Bind Jm,Mode=OneWay}"/>
+                                        <TextBlock Text="{x:Bind Hanz,Mode=OneWay}"/>
+                                        <TextBlock Text="{x:Bind Translation,Mode=OneWay}"/>
+                                        <ToggleButton IsChecked="{x:Bind Trained,Mode=TwoWay}" Click="ToggleButton_Click">切换已训练</ToggleButton>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                            <GridView.ItemContainerStyle>
+                                <Style TargetType="GridViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </GridView.ItemContainerStyle>
+                        </GridView>
+                    </DataTemplate>
+                </Pivot.ItemTemplate>
+            </Pivot>
+        </SplitView>
+        <Grid x:Name="GrdWaiting" Visibility="Collapsed" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressRing IsActive="True" Width="100" Height="100" />
+                <TextBlock Margin="12" FontSize="20">正在保存，请勿退出程序！</TextBlock>
+            </StackPanel>
+        </Grid>
+        <MediaPlayerElement AutoPlay="True" x:Name="wmp" Visibility="Collapsed"/>
     </Grid>
 </Page>
