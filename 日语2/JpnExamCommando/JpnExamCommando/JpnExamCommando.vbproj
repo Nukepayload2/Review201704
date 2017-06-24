@@ -106,7 +106,6 @@
     <Compile Include="App.xaml.vb">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Interaction.vb" />
     <Compile Include="MainPage.xaml.vb">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -181,6 +180,12 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\vs2015\Nukepayload2.VisualBasicExtensions.UWP\Nukepayload2.VisualBasicExtensions.UWP.vbproj">
+      <Project>{f9ffbf2b-5def-46b6-8fae-650784eeff47}</Project>
+      <Name>Nukepayload2.VisualBasicExtensions.UWP</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

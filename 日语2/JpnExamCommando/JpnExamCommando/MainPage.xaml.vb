@@ -1,11 +1,13 @@
 ﻿' https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
+Imports Nukepayload2.VisualBasicExtensions.UWP
 Imports System.Text.RegularExpressions
 Imports Newtonsoft.Json
 Imports Windows.Media.Core
 Imports Windows.Media.Playback
 Imports Windows.Media.SpeechSynthesis
 Imports Windows.Storage
+
 ''' <summary>
 ''' 可用于自身或导航至 Frame 内部的空白页。
 ''' </summary>
@@ -111,8 +113,22 @@ Public NotInheritable Class MainPage
 
     Dim _speechJp As New SpeechSynthesizer
     Dim _speechCn As New SpeechSynthesizer
+
     Private Async Sub BtnPlay_Click(sender As Object, e As RoutedEventArgs)
-        sender.IsEnabled = False
+        BtnLoopPlay.IsEnabled = False
+        Await PlayAsync()
+        BtnLoopPlay.IsEnabled = True
+    End Sub
+
+    Private Async Sub BtnPlayLoop_Click(sender As Object, e As RoutedEventArgs)
+        Do While BtnLoopPlay.IsChecked AndAlso BtnPlay.IsEnabled
+            Await PlayAsync()
+        Loop
+    End Sub
+
+    Private Async Function PlayAsync() As Task
+        If Not BtnPlay.IsEnabled Then Return
+        BtnPlay.IsEnabled = False
         Try
             Dim voiceJp = From v In SpeechSynthesizer.AllVoices Where v.Language = "ja-JP"
             If Not voiceJp.Any Then
@@ -121,9 +137,8 @@ Public NotInheritable Class MainPage
             Else
                 _speechJp.Voice = voiceJp.First
             End If
-
-            Dim jm$ = sender.Tag.Jm
-            Dim cn$ = sender.Tag.Translation
+            Dim jm$ = BtnPlay.Tag.Jm
+            Dim cn$ = BtnPlay.Tag.Translation
             Dim strm = Await _speechJp.SynthesizeTextToStreamAsync(jm)
             Dim cnStrm = Await _speechCn.SynthesizeTextToStreamAsync(cn)
             Dim ja = MediaSource.CreateFromStream(strm, strm.ContentType)
@@ -151,7 +166,7 @@ Public NotInheritable Class MainPage
                 Await Task.Delay(1)
             Loop
         Finally
-            sender.IsEnabled = True
+            BtnPlay.IsEnabled = True
         End Try
-    End Sub
+    End Function
 End Class

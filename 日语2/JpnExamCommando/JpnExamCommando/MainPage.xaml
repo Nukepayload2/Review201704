@@ -27,12 +27,17 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="BtnBack" Style="{StaticResource NavigationBackButtonNormalStyle}"/>
                         <TextBlock Grid.Column="1" Margin="4" FontSize="24">練習します</TextBlock>
-                        <Button Tag="{Binding Mode=OneWay}" Grid.Column="2" Margin="4" Click="BtnPlay_Click">
-                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE102;" />
-                        </Button>
-                        <Button x:Name="BtnClearInk" Grid.Column="3" Margin="4">
-                            <SymbolIcon Symbol="Delete"/>
-                        </Button>
+                        <StackPanel Orientation="Horizontal" Grid.Column="2">
+                            <ToggleButton x:Name="BtnLoopPlay" Margin="4" Background="#3F9F0000" Click="BtnPlayLoop_Click">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CA;" />
+                            </ToggleButton>
+                            <Button x:Name="BtnPlay" Tag="{Binding Mode=OneWay}" Margin="4" Click="BtnPlay_Click">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE102;" />
+                            </Button>
+                            <Button x:Name="BtnClearInk" Margin="4">
+                                <SymbolIcon Symbol="Delete"/>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
