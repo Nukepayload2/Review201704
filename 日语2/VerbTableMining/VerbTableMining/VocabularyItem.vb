@@ -27,55 +27,59 @@
         Dim 没假名 As Boolean
         Dim 有平假名 As Boolean
         Dim 有片假名 As Boolean
-        If 词性 = 词汇分类.名词 Then
-            有汉字 = Not String.IsNullOrWhiteSpace(items(2))
-            If 有汉字 Then
-                没假名 = 0 = Aggregate ch In items(2) Where ch.是平假名 OrElse ch.是片假名 Into Count
-            End If
-            ' 确定词性
-            If 有汉字 Then
-                有平假名 = 0 < Aggregate ch In items(2) Where Not Char.IsSymbol(ch) AndAlso
-                                    Not Char.IsWhiteSpace(ch) AndAlso ch.是平假名 Into Count
-                有片假名 = 0 < Aggregate ch In items(2) Where Not Char.IsSymbol(ch) AndAlso
-                                    Not Char.IsWhiteSpace(ch) AndAlso ch.是片假名 Into Count
-                If 没假名 Then
-                    词性结果 = "纯汉字名词"
+        Select Case 词性
+            Case 词汇分类.名词
+                有汉字 = Not String.IsNullOrWhiteSpace(items(2))
+                If 有汉字 Then
+                    没假名 = 0 = Aggregate ch In items(2) Where ch.是平假名 OrElse ch.是片假名 Into Count
+                End If
+                ' 确定词性
+                If 有汉字 Then
+                    有平假名 = 0 < Aggregate ch In items(2) Where Not Char.IsSymbol(ch) AndAlso
+                                        Not Char.IsWhiteSpace(ch) AndAlso ch.是平假名 Into Count
+                    有片假名 = 0 < Aggregate ch In items(2) Where Not Char.IsSymbol(ch) AndAlso
+                                        Not Char.IsWhiteSpace(ch) AndAlso ch.是片假名 Into Count
+                    If 没假名 Then
+                        词性结果 = "纯汉字名词"
+                    Else
+                        If 有平假名 Then
+                            If 有片假名 Then
+                                词性结果 = "带汉字平假名片假名名词"
+                            Else
+                                词性结果 = "带汉字平假名名词"
+                            End If
+                        Else
+                            If 有片假名 Then
+                                词性结果 = "带汉字片假名名词"
+                            Else
+                                Throw New ArgumentException(NameOf(line))
+                            End If
+                        End If
+                    End If
                 Else
+                    有平假名 = 0 < Aggregate ch In items(1) Where Not Char.IsSymbol(ch) AndAlso
+                                            Not Char.IsWhiteSpace(ch) AndAlso ch.是平假名 Into Count
+                    有片假名 = 0 < Aggregate ch In items(1) Where Not Char.IsSymbol(ch) AndAlso
+                                            Not Char.IsWhiteSpace(ch) AndAlso ch.是片假名 Into Count
                     If 有平假名 Then
                         If 有片假名 Then
-                            词性结果 = "带汉字平假名片假名名词"
+                            词性结果 = "平假名片假名名词"
                         Else
-                            词性结果 = "带汉字平假名名词"
+                            词性结果 = "纯平假名名词"
                         End If
                     Else
                         If 有片假名 Then
-                            词性结果 = "带汉字片假名名词"
+                            词性结果 = "纯片假名名词"
                         Else
                             Throw New ArgumentException(NameOf(line))
                         End If
                     End If
                 End If
-            Else
-                有平假名 = 0 < Aggregate ch In items(1) Where Not Char.IsSymbol(ch) AndAlso
-                                        Not Char.IsWhiteSpace(ch) AndAlso ch.是平假名 Into Count
-                有片假名 = 0 < Aggregate ch In items(1) Where Not Char.IsSymbol(ch) AndAlso
-                                        Not Char.IsWhiteSpace(ch) AndAlso ch.是片假名 Into Count
-                If 有平假名 Then
-                    If 有片假名 Then
-                        词性结果 = "平假名片假名名词"
-                    Else
-                        词性结果 = "纯平假名名词"
-                    End If
-                Else
-                    If 有片假名 Then
-                        词性结果 = "纯片假名名词"
-                    Else
-                        Throw New ArgumentException(NameOf(line))
-                    End If
-                End If
-            End If
+            Case Else
+                词性结果 = 词性.ToString
+        End Select
+        If 词性 = 词汇分类.名词 Then
         Else
-            词性结果 = 词性.ToString
         End If
         Return New VocabularyItem With {
             .假名 = items(1), .日文汉字 = items(2), .翻译 = items(3), .词性 = 词性结果

@@ -5,7 +5,7 @@ Imports Newtonsoft.Json
 Public Class Vocabulary
 
     Public Shared Async Function RefineAsync() As Task
-        Dim markdowns = Aggregate fn In Enumerable.Range(8, 12)
+        Dim markdowns = Aggregate fn In Enumerable.Range(8, 13)
                         Select $"G:\vs2017\Review201704\日语2\单词{fn.ToString("00")}.md" Into ToArray
         Await RefineAsync(markdowns)
     End Function
