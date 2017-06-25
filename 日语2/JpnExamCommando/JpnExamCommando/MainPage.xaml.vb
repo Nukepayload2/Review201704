@@ -139,8 +139,16 @@ Public NotInheritable Class MainPage
             End If
             Dim jm$ = BtnPlay.Tag.Jm
             Dim cn$ = BtnPlay.Tag.Translation
+            Dim fkcn$ = BtnPlay.Tag.Hanz
+            If Not String.IsNullOrEmpty(fkcn) Then
+                fkcn = StrConv(fkcn, VbStrConv.SimplifiedChinese)
+            End If
             Dim strm = Await _speechJp.SynthesizeTextToStreamAsync(jm)
             Dim cnStrm = Await _speechCn.SynthesizeTextToStreamAsync(cn)
+            Dim fkCnStrm As SpeechSynthesisStream = Nothing
+            If Not String.IsNullOrEmpty(fkcn) Then
+                fkCnStrm = Await _speechCn.SynthesizeTextToStreamAsync(fkcn)
+            End If
             Dim ja = MediaSource.CreateFromStream(strm, strm.ContentType)
             Dim waiting = True
             Dim handler As TypedEventHandler(Of MediaPlayer, System.Object) =
@@ -156,8 +164,25 @@ Public NotInheritable Class MainPage
                                     waiting = False
                                 End Sub)
                             End Sub
-                        AddHandler wmp.MediaPlayer.MediaEnded, cnHandler
-                        wmp.Source = MediaSource.CreateFromStream(cnStrm, cnStrm.ContentType)
+                        Dim playCn =
+                            Sub()
+                                AddHandler wmp.MediaPlayer.MediaEnded, cnHandler
+                                wmp.Source = MediaSource.CreateFromStream(cnStrm, cnStrm.ContentType)
+                            End Sub
+                        Dim fakeCnHandler As TypedEventHandler(Of MediaPlayer, System.Object) =
+                            Async Sub(s2, e2)
+                                Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                                Sub()
+                                    RemoveHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
+                                    playCn()
+                                End Sub)
+                            End Sub
+                        If fkCnStrm Is Nothing Then
+                            playCn()
+                        Else
+                            AddHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
+                            wmp.Source = MediaSource.CreateFromStream(fkCnStrm, fkCnStrm.ContentType)
+                        End If
                     End Sub)
                 End Sub
             AddHandler wmp.MediaPlayer.MediaEnded, handler
