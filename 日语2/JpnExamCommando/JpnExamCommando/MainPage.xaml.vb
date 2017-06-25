@@ -44,7 +44,9 @@ Public NotInheritable Class MainPage
             Dim grouped = Aggregate itm In groupItems Group By itm.Kind Into Group
                           Select New VocabularyGroup With {.Kind = Kind, .Group = Group.ToArray} Into ToArray
             DataSource = grouped
+            Await SaveDataAsync()
         End If
+        GrdWaiting.Visibility = Visibility.Collapsed
     End Sub
 
     Private Async Function LoadDataAsync() As Task(Of Boolean)
@@ -93,16 +95,19 @@ Public NotInheritable Class MainPage
 
     Private Sub BtnBack_Click(sender As Object, e As RoutedEventArgs) Handles BtnBack.Click
         SplTrain.IsPaneOpen = False
-        InkTraining.InkPresenter.StrokeContainer.Clear()
     End Sub
 
     Private Sub BtnClearInk_Click(sender As Object, e As RoutedEventArgs) Handles BtnClearInk.Click
         InkTraining.InkPresenter.StrokeContainer.Clear()
     End Sub
 
+    Dim _curModel As VocabularyGroupItem
+
     Private Sub GridView_ItemClick(sender As Object, e As ItemClickEventArgs)
         GrdSelectedItem.DataContext = e.ClickedItem
+        _curModel = e.ClickedItem
         SplTrain.IsPaneOpen = True
+        InkTraining.InkPresenter.StrokeContainer.Clear()
     End Sub
 
     Private Async Sub ToggleButton_Click(sender As Object, e As RoutedEventArgs)
@@ -115,27 +120,39 @@ Public NotInheritable Class MainPage
     Dim _speechCn As New SpeechSynthesizer
 
     Private Async Sub BtnPlay_Click(sender As Object, e As RoutedEventArgs)
+        BtnBrainWash.IsEnabled = False
         BtnLoopPlay.IsEnabled = False
         Await PlayAsync()
         BtnLoopPlay.IsEnabled = True
+        BtnBrainWash.IsEnabled = True
     End Sub
 
     Private Async Sub BtnPlayLoop_Click(sender As Object, e As RoutedEventArgs)
+        If Not BtnPlay.IsEnabled Then Return
+        BtnBrainWash.IsEnabled = False
         Do While BtnLoopPlay.IsChecked AndAlso BtnPlay.IsEnabled
             Await PlayAsync()
         Loop
+        BtnBrainWash.IsEnabled = True
     End Sub
+
+    Private Async Function CheckSpeechPrerequisiteAsync() As Task(Of Boolean)
+        Dim voiceJp = From v In SpeechSynthesizer.AllVoices Where v.Language = "ja-JP"
+        If Not voiceJp.Any Then
+            Await MsgBoxAsync("请先安装日语语言包和日语语音。",, "缺少语音包")
+            Return False
+        Else
+            _speechJp.Voice = voiceJp.First
+            Return True
+        End If
+    End Function
 
     Private Async Function PlayAsync() As Task
         If Not BtnPlay.IsEnabled Then Return
         BtnPlay.IsEnabled = False
         Try
-            Dim voiceJp = From v In SpeechSynthesizer.AllVoices Where v.Language = "ja-JP"
-            If Not voiceJp.Any Then
-                Await MsgBoxAsync("请先安装日语语言包和日语语音。",, "缺少语音包")
+            If Not Await CheckSpeechPrerequisiteAsync() Then
                 Return
-            Else
-                _speechJp.Voice = voiceJp.First
             End If
             Dim jm$ = BtnPlay.Tag.Jm
             Dim cn$ = BtnPlay.Tag.Translation
@@ -143,55 +160,106 @@ Public NotInheritable Class MainPage
             If Not String.IsNullOrEmpty(fkcn) Then
                 fkcn = StrConv(fkcn, VbStrConv.SimplifiedChinese)
             End If
-            Dim strm = Await _speechJp.SynthesizeTextToStreamAsync(jm)
+            Dim jaStrm = Await _speechJp.SynthesizeTextToStreamAsync(jm)
             Dim cnStrm = Await _speechCn.SynthesizeTextToStreamAsync(cn)
             Dim fkCnStrm As SpeechSynthesisStream = Nothing
             If Not String.IsNullOrEmpty(fkcn) Then
                 fkCnStrm = Await _speechCn.SynthesizeTextToStreamAsync(fkcn)
             End If
-            Dim ja = MediaSource.CreateFromStream(strm, strm.ContentType)
-            Dim waiting = True
-            Dim handler As TypedEventHandler(Of MediaPlayer, System.Object) =
-                Async Sub(s, arg)
-                    Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                    Sub()
-                        RemoveHandler wmp.MediaPlayer.MediaEnded, handler
-                        Dim cnHandler As TypedEventHandler(Of MediaPlayer, System.Object) =
-                            Async Sub(s2, e2)
-                                Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                                Sub()
-                                    RemoveHandler wmp.MediaPlayer.MediaEnded, cnHandler
-                                    waiting = False
-                                End Sub)
-                            End Sub
-                        Dim playCn =
-                            Sub()
-                                AddHandler wmp.MediaPlayer.MediaEnded, cnHandler
-                                wmp.Source = MediaSource.CreateFromStream(cnStrm, cnStrm.ContentType)
-                            End Sub
-                        Dim fakeCnHandler As TypedEventHandler(Of MediaPlayer, System.Object) =
-                            Async Sub(s2, e2)
-                                Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                                Sub()
-                                    RemoveHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
-                                    playCn()
-                                End Sub)
-                            End Sub
-                        If fkCnStrm Is Nothing Then
-                            playCn()
-                        Else
-                            AddHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
-                            wmp.Source = MediaSource.CreateFromStream(fkCnStrm, fkCnStrm.ContentType)
-                        End If
-                    End Sub)
-                End Sub
-            AddHandler wmp.MediaPlayer.MediaEnded, handler
-            wmp.Source = ja
-            Do While waiting
-                Await Task.Delay(1)
-            Loop
+            Await PlaySpeechCore(jaStrm, cnStrm, fkCnStrm)
         Finally
             BtnPlay.IsEnabled = True
         End Try
     End Function
+
+    Private Async Function PlaySpeechCore(jaStrm As SpeechSynthesisStream, cnStrm As SpeechSynthesisStream, fkCnStrm As SpeechSynthesisStream) As Task
+        Dim ja = MediaSource.CreateFromStream(jaStrm, jaStrm.ContentType)
+        Dim waiting = True
+        Dim handler As TypedEventHandler(Of MediaPlayer, System.Object) =
+            Async Sub(s, arg)
+                Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                Sub()
+                    RemoveHandler wmp.MediaPlayer.MediaEnded, handler
+                    Dim cnHandler As TypedEventHandler(Of MediaPlayer, System.Object) =
+                        Async Sub(s2, e2)
+                            Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                            Sub()
+                                RemoveHandler wmp.MediaPlayer.MediaEnded, cnHandler
+                                waiting = False
+                            End Sub)
+                        End Sub
+                    Dim playCn =
+                        Sub()
+                            AddHandler wmp.MediaPlayer.MediaEnded, cnHandler
+                            wmp.Source = MediaSource.CreateFromStream(cnStrm, cnStrm.ContentType)
+                        End Sub
+                    Dim fakeCnHandler As TypedEventHandler(Of MediaPlayer, System.Object) =
+                        Async Sub(s2, e2)
+                            Await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                            Sub()
+                                RemoveHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
+                                playCn()
+                            End Sub)
+                        End Sub
+                    If fkCnStrm Is Nothing OrElse fkCnStrm.Size < 1000 Then
+                        playCn()
+                    Else
+                        AddHandler wmp.MediaPlayer.MediaEnded, fakeCnHandler
+                        wmp.Source = MediaSource.CreateFromStream(fkCnStrm, fkCnStrm.ContentType)
+                    End If
+                End Sub)
+            End Sub
+        AddHandler wmp.MediaPlayer.MediaEnded, handler
+        wmp.Source = ja
+        Do While waiting
+            Await Task.Delay(1)
+        Loop
+        jaStrm.Dispose()
+        cnStrm.Dispose()
+        fkCnStrm?.Dispose()
+    End Function
+
+    Private Async Sub BtnBrainWash_ClickAsync(sender As Object, e As RoutedEventArgs) Handles BtnBrainWash.Click
+        If Not Await CheckSpeechPrerequisiteAsync() Then
+            Return
+        End If
+        Dim index = Verbs.SelectedIndex
+        Dim data = DataSource(index)
+        BtnPlay.IsEnabled = False
+        BtnLoopPlay.IsEnabled = False
+        Dim defaultIndex = 0
+        If _curModel IsNot Nothing Then
+            For i = 0 To data.Group.Length - 1
+                If data.Group(i) Is _curModel Then
+                    defaultIndex = i
+                End If
+            Next
+        End If
+        Do While BtnBrainWash.IsChecked
+            For i = defaultIndex To data.Group.Length - 1
+                Dim wd = data.Group(i)
+                If BtnIgnoreBrainWashed.IsChecked AndAlso wd.Trained Then
+                    Continue For
+                End If
+                If Not BtnBrainWash.IsChecked Then
+                    Exit Do
+                End If
+                If index <> Verbs.SelectedIndex Then
+                    BtnBrainWash.IsChecked = False
+                    Exit Do
+                End If
+                Dim jaStrm = Await _speechJp.SynthesizeTextToStreamAsync(wd.Jm)
+                Dim cnStrm = Await _speechCn.SynthesizeTextToStreamAsync(wd.Translation)
+                Dim fkcn$ = wd.Hanz
+                Dim fkCnStrm As SpeechSynthesisStream = Nothing
+                If Not String.IsNullOrEmpty(fkcn) Then
+                    fkCnStrm = Await _speechCn.SynthesizeTextToStreamAsync(fkcn)
+                End If
+                Await PlaySpeechCore(jaStrm, cnStrm, fkCnStrm)
+            Next
+            defaultIndex = 0
+        Loop
+        BtnLoopPlay.IsEnabled = True
+        BtnPlay.IsEnabled = True
+    End Sub
 End Class

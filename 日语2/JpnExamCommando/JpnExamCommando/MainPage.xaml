@@ -9,6 +9,12 @@
     <Page.Resources>
         <local:RememberedConverter x:Key="RememberedConverter"/>
     </Page.Resources>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarToggleButton x:Name="BtnBrainWash" Label="洗脑循环" Icon="RepeatAll"/>
+            <AppBarToggleButton x:Name="BtnIgnoreBrainWashed" Label="跳过已练" Icon="RepeatOne"/>
+        </CommandBar>
+    </Page.BottomAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <SplitView x:Name="SplTrain" PanePlacement="Right">
             <SplitView.Pane>
@@ -98,10 +104,10 @@
                 </Pivot.ItemTemplate>
             </Pivot>
         </SplitView>
-        <Grid x:Name="GrdWaiting" Visibility="Collapsed" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
+        <Grid x:Name="GrdWaiting" Background="{ThemeResource SystemControlBackgroundAltMediumBrush}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ProgressRing IsActive="True" Width="100" Height="100" />
-                <TextBlock Margin="12" FontSize="20">正在保存，请勿退出程序！</TextBlock>
+                <TextBlock Margin="12" FontSize="20">请稍候</TextBlock>
             </StackPanel>
         </Grid>
         <MediaPlayerElement AutoPlay="True" x:Name="wmp" Visibility="Collapsed"/>
