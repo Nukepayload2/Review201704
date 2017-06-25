@@ -7,6 +7,7 @@ Imports Windows.Media.Core
 Imports Windows.Media.Playback
 Imports Windows.Media.SpeechSynthesis
 Imports Windows.Storage
+Imports Windows.System.Display
 
 ''' <summary>
 ''' 可用于自身或导航至 Frame 内部的空白页。
@@ -235,6 +236,7 @@ Public NotInheritable Class MainPage
                 End If
             Next
         End If
+        Call New DisplayRequest().RequestActive()
         Do While BtnBrainWash.IsChecked
             For i = defaultIndex To data.Group.Length - 1
                 Dim wd = data.Group(i)
@@ -259,6 +261,7 @@ Public NotInheritable Class MainPage
             Next
             defaultIndex = 0
         Loop
+        Call New DisplayRequest().RequestRelease()
         BtnLoopPlay.IsEnabled = True
         BtnPlay.IsEnabled = True
     End Sub

@@ -87,9 +87,9 @@
                                 <DataTemplate x:DataType="local:VocabularyGroupItem">
                                     <StackPanel Background="{x:Bind Trained,Mode=OneWay,Converter={StaticResource RememberedConverter}}" RequestedTheme="Dark">
                                         <TextBlock FontSize="24" Text="{x:Bind Jm,Mode=OneWay}"/>
-                                        <TextBlock Text="{x:Bind Hanz,Mode=OneWay}"/>
-                                        <TextBlock Text="{x:Bind Translation,Mode=OneWay}"/>
-                                        <ToggleButton IsChecked="{x:Bind Trained,Mode=TwoWay}" Click="ToggleButton_Click">切换已训练</ToggleButton>
+                                        <TextBlock x:Phase="1" Text="{x:Bind Hanz,Mode=OneWay}"/>
+                                        <TextBlock x:Phase="1" Text="{x:Bind Translation,Mode=OneWay}"/>
+                                        <ToggleButton x:Phase="2" IsChecked="{x:Bind Trained,Mode=TwoWay}" Click="ToggleButton_Click">切换已训练</ToggleButton>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridView.ItemTemplate>
