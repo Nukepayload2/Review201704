@@ -128,13 +128,16 @@ Public NotInheritable Class MainPage
         BtnBrainWash.IsEnabled = True
     End Sub
 
+    Dim _playLoopExecuting As Boolean
     Private Async Sub BtnPlayLoop_Click(sender As Object, e As RoutedEventArgs)
-        If Not BtnPlay.IsEnabled Then Return
+        If Not BtnPlay.IsEnabled OrElse _playLoopExecuting Then Return
+        _playLoopExecuting = True
         BtnBrainWash.IsEnabled = False
         Do While BtnLoopPlay.IsChecked AndAlso BtnPlay.IsEnabled
             Await PlayAsync()
         Loop
         BtnBrainWash.IsEnabled = True
+        _playLoopExecuting = False
     End Sub
 
     Private Async Function CheckSpeechPrerequisiteAsync() As Task(Of Boolean)
@@ -220,10 +223,12 @@ Public NotInheritable Class MainPage
         fkCnStrm?.Dispose()
     End Function
 
+    Dim _brainWashExecuting As Boolean
     Private Async Sub BtnBrainWash_ClickAsync(sender As Object, e As RoutedEventArgs) Handles BtnBrainWash.Click
-        If Not Await CheckSpeechPrerequisiteAsync() Then
+        If Not Await CheckSpeechPrerequisiteAsync() OrElse _brainWashExecuting Then
             Return
         End If
+        _brainWashExecuting = True
         Dim index = Verbs.SelectedIndex
         Dim data = DataSource(index)
         BtnPlay.IsEnabled = False
@@ -236,7 +241,8 @@ Public NotInheritable Class MainPage
                 End If
             Next
         End If
-        Call New DisplayRequest().RequestActive()
+        Dim req As New DisplayRequest
+        req.RequestActive()
         Do While BtnBrainWash.IsChecked
             For i = defaultIndex To data.Group.Length - 1
                 Dim wd = data.Group(i)
@@ -261,8 +267,9 @@ Public NotInheritable Class MainPage
             Next
             defaultIndex = 0
         Loop
-        Call New DisplayRequest().RequestRelease()
+        req.RequestRelease()
         BtnLoopPlay.IsEnabled = True
         BtnPlay.IsEnabled = True
+        _brainWashExecuting = False
     End Sub
 End Class

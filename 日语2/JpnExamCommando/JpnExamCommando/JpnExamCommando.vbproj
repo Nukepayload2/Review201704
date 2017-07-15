@@ -122,6 +122,7 @@
     </AppxManifest>
     <None Include="JpnExamCommando_TemporaryKey.pfx" />
     <Content Include="vocabulary8to20.json" />
+    <None Include="ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="My Project\Default.rd.xml" />
